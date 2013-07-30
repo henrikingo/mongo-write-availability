@@ -1,0 +1,57 @@
+
+# Ireland
+# Private IPs
+10.39.48.74             app.eu.local
+10.37.148.50            configdb3.eu.local
+10.36.140.22            mongos.eu.local
+10.36.138.48            db3.s1.eu.local
+10.36.179.99            db4.s1.eu.local
+10.39.25.227            db3.s2.eu.local
+10.36.204.169           db4.s2.eu.local
+10.37.137.70            db1.s3.eu.local
+10.39.55.122            db2.s3.eu.local
+10.37.131.100           db1.s4.eu.local
+10.36.141.163           db2.s4.eu.local
+
+# Corresponding public DNS, in same order
+46.137.69.87        app.eu.public
+54.216.190.205      configdb3.eu.public
+54.228.17.40        mongos.eu.public
+54.228.155.126      db3.s1.eu.public
+176.34.174.150      db4.s1.eu.public
+54.217.9.151        db3.s2.eu.public
+176.34.93.115       db4.s2.eu.public
+54.216.248.187      db1.s3.eu.public
+54.228.132.195      db2.s3.eu.public
+54.216.186.121      db1.s4.eu.public
+46.137.141.214      db2.s4.eu.public
+
+
+
+# Oregon
+# Private IPs
+10.245.142.92           app.us.local
+10.245.119.136          configdb2.us.local
+10.216.53.104           mongos.us.local       configdb1.us.local
+10.245.97.94            db1.s1.us.local
+10.246.21.238           db2.s1.us.local
+10.246.0.179            db1.s2.us.local
+10.245.96.18            db2.s2.us.local
+10.245.5.187            db3.s3.us.local
+10.245.98.46            db4.s3.us.local
+10.216.57.143           db3.s4.us.local
+10.245.138.207          db4.s4.us.local
+
+# Corresponding public DNS, in same order
+54.214.193.76       app.us.public
+54.212.50.111       configdb2.us.public
+54.212.89.235       mongos.us.public       configdb1.us.public
+54.212.11.97        db1.s1.us.public
+54.212.122.24       db2.s1.us.public
+54.212.64.52        db1.s2.us.public
+54.212.19.198       db2.s2.us.public
+54.212.87.145       db3.s3.us.public
+50.112.4.115        db4.s3.us.public
+54.218.197.153      db3.s4.us.public
+54.212.114.186      db4.s4.us.public
+
