@@ -1,0 +1,250 @@
+{
+	"_id" : "s1",
+	"members" : [
+		{
+			"_id" : 0,
+			"host" : "db1.s1.us.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 1,
+			"host" : "db2.s1.us.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 2,
+			"host" : "db3.s1.eu.public:27017"
+		},
+		{
+			"_id" : 3,
+			"host" : "db4.s1.eu.public:27017"
+		}
+	]
+}
+
+
+
+{
+	"_id" : "s2",
+	"members" : [
+		{
+			"_id" : 0,
+			"host" : "db1.s2.us.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 1,
+			"host" : "db2.s2.us.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 2,
+			"host" : "db3.s2.eu.public:27017"
+		},
+		{
+			"_id" : 3,
+			"host" : "db4.s2.eu.public:27017"
+		}
+	]
+}
+
+
+
+
+{
+	"_id" : "s3",
+	"members" : [
+		{
+			"_id" : 0,
+			"host" : "db1.s3.eu.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 1,
+			"host" : "db2.s3.eu.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 2,
+			"host" : "db3.s3.us.public:27017"
+		},
+		{
+			"_id" : 3,
+			"host" : "db4.s3.us.public:27017"
+		}
+	]
+}
+
+
+
+
+
+{
+	"_id" : "s4",
+	"members" : [
+		{
+			"_id" : 0,
+			"host" : "db1.s4.eu.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 1,
+			"host" : "db2.s4.eu.public:27017",
+			"priority" : 2
+		},
+		{
+			"_id" : 2,
+			"host" : "db3.s4.us.public:27017"
+		},
+		{
+			"_id" : 3,
+			"host" : "db4.s4.us.public:27017"
+		}
+	]
+}
+
+
+
+
+mongos> sh.addShard("s1/db1.s1.us.public")
+{ "shardAdded" : "s1", "ok" : 1 }
+mongos> sh.addShard("s2/db1.s2.us.public")
+{ "shardAdded" : "s2", "ok" : 1 }
+mongos> sh.addShard("s3/db1.s3.eu.public")
+{ "shardAdded" : "s3", "ok" : 1 }
+mongos> sh.addShard("s4/db1.s4.eu.public")
+{ "shardAdded" : "s4", "ok" : 1 }
+
+
+
+
+mongos> sh.addShardTag("s1", "us")
+mongos> sh.addShardTag("s1", "dc1")
+mongos> sh.addShardTag("s2", "dc1")
+mongos> sh.addShardTag("s2", "us")
+mongos> sh.addShardTag("s3", "eu")
+mongos> sh.addShardTag("s3", "dc2")
+mongos> sh.addShardTag("s4", "dc2")
+mongos> sh.addShardTag("s4", "eu")
+mongos> sh.status()
+--- Sharding Status --- 
+  sharding version: {
+	"_id" : 1,
+	"version" : 3,
+	"minCompatibleVersion" : 3,
+	"currentVersion" : 4,
+	"clusterId" : ObjectId("51f7a987063593b931d59108")
+}
+  shards:
+	{  "_id" : "s1",  "host" : "s1/db1.s1.us.public:27017,db2.s1.us.public:27017,db3.s1.eu.public:27017,db4.s1.eu.public:27017",  "tags" : [ 	"us", 	"dc1" ] }
+	{  "_id" : "s2",  "host" : "s2/db1.s2.us.public:27017,db2.s2.us.public:27017,db3.s2.eu.public:27017,db4.s2.eu.public:27017",  "tags" : [ 	"dc1", 	"us" ] }
+	{  "_id" : "s3",  "host" : "s3/db1.s3.eu.public:27017,db2.s3.eu.public:27017,db3.s3.us.public:27017,db4.s3.us.public:27017",  "tags" : [ 	"eu", 	"dc2" ] }
+	{  "_id" : "s4",  "host" : "s4/db1.s4.eu.public:27017,db2.s4.eu.public:27017,db3.s4.us.public:27017,db4.s4.us.public:27017",  "tags" : [ 	"dc2", 	"eu" ] }
+  databases:
+	{  "_id" : "admin",  "partitioned" : false,  "primary" : "config" }
+	{  "_id" : "test",  "partitioned" : false,  "primary" : "s1" }
+
+mongos> 
+
+
+
+
+
+
+
+
+
+mongos> use writeav
+switched to db writeav
+mongos> db.justatest.drop()
+true
+mongos> db.justatest.insert( { _id : 1, username : "hingo", firstname : "Henrik", lastname : "Ingo", oddeven : 1, country : "Finland", continent : "Europe" } )
+mongos> db.justatest.insert( { _id : 2, username : "jsr", firstname : "Jared", lastname : "Rosoff", oddeven : 2, country : "USA", continent : "America" } )
+mongos> db.justatest.ensureIndex({ continent : 1, oddeven : 1, username : 1 } )
+mongos> 
+
+mongos> 
+
+mongos> 
+mongos> sh.shardCollection( "writeav.justatest", { continent : 1, oddeven : 1, username : 1 }  )
+{ "collectionsharded" : "writeav.justatest", "ok" : 1 }
+mongos> 
+
+mongos> 
+
+mongos> 
+mongos> sh.addTagRange( "writeav.justatest", { continent : "America" }, { continent : "America1" }, "us" )
+mongos> sh.addTagRange( "writeav.justatest", { continent : "Europe" }, { continent : "Europe1" }, "eu" )
+mongos> 
+
+mongos> 
+mongos> sh.status()
+--- Sharding Status --- 
+  sharding version: {
+	"_id" : 1,
+	"version" : 3,
+	"minCompatibleVersion" : 3,
+	"currentVersion" : 4,
+	"clusterId" : ObjectId("51f7a987063593b931d59108")
+}
+  shards:
+	{  "_id" : "s1",  "host" : "s1/db1.s1.us.public:27017,db2.s1.us.public:27017,db3.s1.eu.public:27017,db4.s1.eu.public:27017",  "tags" : [ 	"us", 	"dc1" ] }
+	{  "_id" : "s2",  "host" : "s2/db1.s2.us.public:27017,db2.s2.us.public:27017,db3.s2.eu.public:27017,db4.s2.eu.public:27017",  "tags" : [ 	"dc1", 	"us" ] }
+	{  "_id" : "s3",  "host" : "s3/db1.s3.eu.public:27017,db2.s3.eu.public:27017,db3.s3.us.public:27017,db4.s3.us.public:27017",  "tags" : [ 	"eu", 	"dc2" ] }
+	{  "_id" : "s4",  "host" : "s4/db1.s4.eu.public:27017,db2.s4.eu.public:27017,db3.s4.us.public:27017,db4.s4.us.public:27017",  "tags" : [ 	"dc2", 	"eu" ] }
+  databases:
+	{  "_id" : "admin",  "partitioned" : false,  "primary" : "config" }
+	{  "_id" : "test",  "partitioned" : false,  "primary" : "s1" }
+	{  "_id" : "writeav",  "partitioned" : true,  "primary" : "s1" }
+		writeav.justatest
+			shard key: { "continent" : 1, "oddeven" : 1, "username" : 1 }
+			chunks:
+				s1	2
+				s3	1
+			{
+	"continent" : { "$minKey" : 1 },
+	"oddeven" : { "$minKey" : 1 },
+	"username" : { "$minKey" : 1 }
+} -->> {
+	"continent" : "America",
+	"oddeven" : { "$minKey" : 1 },
+	"username" : { "$minKey" : 1 }
+} on : s1 Timestamp(2, 1) 
+			{
+	"continent" : "America",
+	"oddeven" : { "$minKey" : 1 },
+	"username" : { "$minKey" : 1 }
+} -->> {
+	"continent" : "Europe",
+	"oddeven" : { "$minKey" : 1 },
+	"username" : { "$minKey" : 1 }
+} on : s1 Timestamp(1, 3) 
+			{
+	"continent" : "Europe",
+	"oddeven" : { "$minKey" : 1 },
+	"username" : { "$minKey" : 1 }
+} -->> {
+	"continent" : { "$maxKey" : 1 },
+	"oddeven" : { "$maxKey" : 1 },
+	"username" : { "$maxKey" : 1 }
+} on : s3 Timestamp(2, 0) 
+			 tag: us  { "continent" : "America" } -->> { "continent" : "America1" }
+			 tag: eu  { "continent" : "Europe" } -->> { "continent" : "Europe1" }
+
+
+
+
+[ec2-user@ip-10-36-140-22 ~]$ mongo db1.s1.us.public
+s1:PRIMARY> use writeav
+switched to db writeav
+s1:PRIMARY> db.justatest.find()
+{ "_id" : 2, "username" : "jsr", "firstname" : "Jared", "lastname" : "Rosoff", "oddeven" : 2, "country" : "USA", "continent" : "America" }
+s1:PRIMARY> exit
+bye
+[ec2-user@ip-10-36-140-22 ~]$ mongo db1.s3.eu.public
+
+s3:PRIMARY> use writeav
+switched to db writeav
+s3:PRIMARY> db.justatest.find()
+{ "_id" : 1, "username" : "hingo", "firstname" : "Henrik", "lastname" : "Ingo", "oddeven" : 1, "country" : "Finland", "continent" : "Europe" }
+s3:PRIMARY> 
