@@ -26,6 +26,10 @@ public class mongoAccounting {
         DB db;
         DBCollection coll;
 
+        long startTimeTotal = System.nanoTime();
+        long endTimeTotal;
+        long durationTotal;
+
         try {
             conn = new MongoClient(hostname, port);
             db = conn.getDB(dbName);
@@ -35,6 +39,7 @@ public class mongoAccounting {
             // Give up if connection failed
             return;
         }
+
         long startTime = System.nanoTime();
         long endTime;
         long duration;
@@ -43,14 +48,17 @@ public class mongoAccounting {
             endTime = System.nanoTime();
             duration = endTime - startTime;
             if( doc != null ) {
-                System.out.printf("Duration:\t%d ms\t\tContent: %s %s %d %d\n", duration, doc.get("continent"), doc.get("username"), doc.get("bytes"), doc.get("seconds") );
+                System.out.printf("Duration:\t%d ms\t\tContent: %s %s %d %d\n", duration/1000000, doc.get("continent"), doc.get("username"), doc.get("bytes"), doc.get("seconds") );
             } else {
-                System.out.printf("Duration:\t%d ms\t\tContent: null\n", duration );
+                System.out.printf("Duration:\t%d ms\t\tContent: null\n", duration/1000000 );
             }
             System.out.flush();
             startTime = System.nanoTime();
         }
         conn.close();        
+        endTimeTotal = System.nanoTime();
+        durationTotal = endTimeTotal - startTimeTotal;
+        System.out.printf("Total Duration:\t%d sec\t\tInserts: %d\n", durationTotal/1000000000,  maxInserts);
     }
 
     private static DBObject insertAcct( DBCollection coll ) {
