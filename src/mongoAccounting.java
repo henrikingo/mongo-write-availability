@@ -3,6 +3,7 @@ import java.net.UnknownHostException;
 
 import java.util.Random;
 
+
 public class mongoAccounting {
     // Settings, yes you can edit these before compiling
     private static String   hostname       = "mongos.us.public";
@@ -34,13 +35,20 @@ public class mongoAccounting {
             // Give up if connection failed
             return;
         }
+        long startTime = System.nanoTime();
+        long endTime;
+        long duration;
         for (int i = 0; i < maxInserts; i++) {
-            insertAcct(coll);
+            DBObject doc = insertAcct(coll);
+            endTime = System.nanoTime();
+            duration = endTime - startTime;
+            System.out.printf("Duration: %d\t\tContent: %s %s %d %d", duration, doc.get("continent"), doc.get("username"), doc.get("bytes"), doc.get("seconds") );
+            startTime = System.nanoTime();
         }
         conn.close();        
     }
 
-    private static void insertAcct( DBCollection coll ) {
+    private static DBObject insertAcct( DBCollection coll ) {
         // Create an accounting object to be inserted
         try {
             DBObject doc = new BasicDBObject();
