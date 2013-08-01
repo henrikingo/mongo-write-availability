@@ -6,14 +6,16 @@ import java.util.Random;
 
 public class mongoAccounting {
     // Settings, yes you can edit these before compiling
-    private static String   hostname       = "mongos.us.public";
+    private static String   hostname       = "mongos.eu.public";
     private static int      port           = 27017;
     private static String   dbName         = "avtest";
     private static String   collectionName = "acctBasic";
     //private static String[] usernames      = {"alice",  "bob",     "carol",  "dave",    "eve",    "fred",    "gary",   "harry"   };
     //private static String[] continents     = {"Europe", "America", "Europe", "America", "Europe", "America", "Europe", "America" };
-    private static String[] usernames      = {"bob",     "dave",    "fred",    "harry"   };
-    private static String[] continents     = {"America", "America", "America", "America" };
+    private static String[] usernames      = {"alice",  "carol",  "eve",    "gary",  };
+    private static String[] continents     = {"Europe", "Europe", "Europe", "Europe" };
+    //private static String[] usernames      = {"bob",     "dave",    "fred",    "harry"   };
+    //private static String[] continents     = {"America", "America", "America", "America" };
     private static int      maxInserts     = 1000;
     // End of user serviceable parts
 
