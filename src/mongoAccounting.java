@@ -9,11 +9,11 @@ public class mongoAccounting {
     private static String   hostname       = "mongos.eu.public";
     private static int      port           = 27017;
     private static String   dbName         = "avtest";
-    private static String   collectionName = "acctBasic";
-    //private static String[] usernames      = {"alice",  "bob",     "carol",  "dave",    "eve",    "fred",    "gary",   "harry"   };
-    //private static String[] continents     = {"Europe", "America", "Europe", "America", "Europe", "America", "Europe", "America" };
-    private static String[] usernames      = {"alice",  "carol",  "eve",    "gary",  };
-    private static String[] continents     = {"Europe", "Europe", "Europe", "Europe" };
+    private static String   collectionName = "acctFallback";
+    private static String[] usernames      = {"alice",  "bob",     "carol",  "dave",    "eve",    "fred",    "gary",   "harry"   };
+    private static String[] continents     = {"Europe", "America", "Europe", "America", "Europe", "America", "Europe", "America" };
+    //private static String[] usernames      = {"alice",  "carol",  "eve",    "gary",  };
+    //private static String[] continents     = {"Europe", "Europe", "Europe", "Europe" };
     //private static String[] usernames      = {"bob",     "dave",    "fred",    "harry"   };
     //private static String[] continents     = {"America", "America", "America", "America" };
     private static int      maxInserts     = 1000;
@@ -63,7 +63,10 @@ public class mongoAccounting {
         System.out.printf("Total Duration:\t%d sec\t\tInserts: %d\n", durationTotal/1000000000,  maxInserts);
     }
 
-    private static DBObject insertAcct( DBCollection coll ) {
+    private static DBObject insertAcct( DBCollection realCollection ) {
+        // Wrap the realCollection into a FallbackShardsCollection
+        FallbackShardsCollection coll = new FallbackShardsCollection( realCollection, "username" );
+        
         // Create an accounting object to be inserted
         DBObject doc = null;
         try {
@@ -73,6 +76,7 @@ public class mongoAccounting {
             doc.put( "continent",  continents[n] );
             doc.put( "bytes",      getRandomBytes() );
             doc.put( "seconds",    getRandomSeconds() );
+            // Insert just as if this was a normal DBCollection
             coll.insert(doc);
         } catch (MongoException e) {
             e.printStackTrace();
