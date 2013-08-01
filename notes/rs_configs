@@ -281,6 +281,215 @@ sh.addTagRange( "avtest.acctFallback", { continent : "Europe", _shardAffinity : 
 
 
 
+***********************************************************
+
+After getting all the off-by-one errors right, it works!
+
+Notice how shards s2 and s4 have a dozen or so records for the usernames that don't actually belong there:
+
+hingo@hingo-sputnik:~/hacking/mongo-write-availability$ mongo db1.s1.us.public
+MongoDB shell version: 2.4.5
+connecting to: db1.s1.us.public/test
+s1:PRIMARY> use avtest
+switched to db avtest
+s1:PRIMARY> db.acctFallback.aggregate( [ { $group : { _id : {username : "$username" }, count : { $sum : 1 } } } ]  )
+{
+	"result" : [
+		{
+			"_id" : {
+				"username" : "fred"
+			},
+			"count" : 25234
+		},
+		{
+			"_id" : {
+				"username" : "bob"
+			},
+			"count" : 25186
+		}
+	],
+	"ok" : 1
+}
+s1:PRIMARY> ^C
+bye
+hingo@hingo-sputnik:~/hacking/mongo-write-availability$ mongo db1.s2.us.public
+MongoDB shell version: 2.4.5
+connecting to: db1.s2.us.public/test
+s2:PRIMARY> use avtest
+switched to db avtest
+s2:PRIMARY> db.acctFallback.aggregate( [ { $group : { _id : {username : "$username" }, count : { $sum : 1 } } } ]  )
+{
+	"result" : [
+		{
+			"_id" : {
+				"username" : "bob"
+			},
+			"count" : 22
+		},
+		{
+			"_id" : {
+				"username" : "fred"
+			},
+			"count" : 12
+		},
+		{
+			"_id" : {
+				"username" : "dave"
+			},
+			"count" : 24931
+		},
+		{
+			"_id" : {
+				"username" : "harry"
+			},
+			"count" : 25099
+		}
+	],
+	"ok" : 1
+}
+s2:PRIMARY> ^C
+bye
+hingo@hingo-sputnik:~/hacking/mongo-write-availability$ mongo db1.s3.eu.public
+MongoDB shell version: 2.4.5
+connecting to: db1.s3.eu.public/test
+s3:SECONDARY> use avtest
+switched to db avtest
+s3:SECONDARY> db.acctFallback.aggregate( [ { $group : { _id : {username : "$username" }, count : { $sum : 1 } } } ]  )
+{
+	"result" : [
+		{
+			"_id" : {
+				"username" : "carol"
+			},
+			"count" : 24908
+		}
+	],
+	"ok" : 1
+}
+s3:SECONDARY> ^C
+bye
+hingo@hingo-sputnik:~/hacking/mongo-write-availability$ mongo db1.s4.eu.public
+MongoDB shell version: 2.4.5
+connecting to: db1.s4.eu.public/test
+s4:PRIMARY> use avtest
+switched to db avtest
+s4:PRIMARY> db.acctFallback.aggregate( [ { $group : { _id : {username : "$username" }, count : { $sum : 1 } } } ]  )
+{
+	"result" : [
+		{
+			"_id" : {
+				"username" : "carol"
+			},
+			"count" : 15
+		},
+		{
+			"_id" : {
+				"username" : "alice"
+			},
+			"count" : 25277
+		},
+		{
+			"_id" : {
+				"username" : "gary"
+			},
+			"count" : 25149
+		},
+		{
+			"_id" : {
+				"username" : "eve"
+			},
+			"count" : 25158
+		}
+	],
+	"ok" : 1
+}
+s4:PRIMARY> 
+
+***********************************************************************
+
+NOTE: It's easy to spot in the logs when we've written to a fallback shard, because the timeouts take more than 3000ms.
+How to get that time shortened is a separate issue altogether!
+
+To count the total seconds and bytes of each username, we use the aggregation framework. 
+In fact, this is the exact same query you'd use without ShardFallback too:
+
+mongos> db.acctFallback.aggregate( [ { $group : { _id : {username : "$username" }, tickets : { $sum : 1 }, bytes : { $sum : "$bytes" }, seconds : { $sum : "$seconds" } } }, { $sort : { "_id.username" : 1 } } ]  )
+{
+	"result" : [
+		{
+			"_id" : {
+				"username" : "alice"
+			},
+			"tickets" : 25277,
+			"bytes" : NumberLong("13234685460"),
+			"seconds" : 1126007
+		},
+		{
+			"_id" : {
+				"username" : "bob"
+			},
+			"tickets" : 25208,
+			"bytes" : NumberLong("13214014644"),
+			"seconds" : 1122126
+		},
+		{
+			"_id" : {
+				"username" : "carol"
+			},
+			"tickets" : 24923,
+			"bytes" : NumberLong("13091624559"),
+			"seconds" : 1109270
+		},
+		{
+			"_id" : {
+				"username" : "dave"
+			},
+			"tickets" : 24931,
+			"bytes" : NumberLong("13048124651"),
+			"seconds" : 1110767
+		},
+		{
+			"_id" : {
+				"username" : "eve"
+			},
+			"tickets" : 25158,
+			"bytes" : NumberLong("13156280265"),
+			"seconds" : 1122287
+		},
+		{
+			"_id" : {
+				"username" : "fred"
+			},
+			"tickets" : 25246,
+			"bytes" : NumberLong("13275427813"),
+			"seconds" : 1124492
+		},
+		{
+			"_id" : {
+				"username" : "gary"
+			},
+			"tickets" : 25149,
+			"bytes" : NumberLong("13217755928"),
+			"seconds" : 1121389
+		},
+		{
+			"_id" : {
+				"username" : "harry"
+			},
+			"tickets" : 25099,
+			"bytes" : NumberLong("13274153515"),
+			"seconds" : 1118401
+		}
+	],
+	"ok" : 1
+}
+
+
+
+
+
+
+
 
 
 

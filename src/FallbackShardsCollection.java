@@ -49,7 +49,7 @@ public class FallbackShardsCollection {
         // Use _shardAffinityKey and _fallbackShards to add "routing" information to doc
         doc.put( "_shardAffinity", getShardAffinity( doc ) );
         doc.put( "_fallback", 0 );
-        for( int i=0; i < _fallbackShards; i++ ) {
+        for( int i=0; i <= _fallbackShards; i++ ) {
            try {
               // if this succeeds, just return
               return _collection.insert(doc);
@@ -63,6 +63,7 @@ public class FallbackShardsCollection {
            }
         }
         // This should never happen, compiler requires it
+        System.out.println( "FallbackShardsCollection.insert() Error: THIS SHOULD NEVER HAPPEN!" );
         return null;
     }    
 
