@@ -42,7 +42,12 @@ public class mongoAccounting {
             DBObject doc = insertAcct(coll);
             endTime = System.nanoTime();
             duration = endTime - startTime;
-            System.out.printf("Duration: %d\t\tContent: %s %s %d %d", duration, doc.get("continent"), doc.get("username"), doc.get("bytes"), doc.get("seconds") );
+            if( doc != null ) {
+                System.out.printf("Duration:\t%d ms\t\tContent: %s %s %d %d\n", duration, doc.get("continent"), doc.get("username"), doc.get("bytes"), doc.get("seconds") );
+            } else {
+                System.out.printf("Duration:\t%d ms\t\tContent: null\n", duration );
+            }
+            System.out.flush();
             startTime = System.nanoTime();
         }
         conn.close();        
@@ -50,8 +55,9 @@ public class mongoAccounting {
 
     private static DBObject insertAcct( DBCollection coll ) {
         // Create an accounting object to be inserted
+        DBObject doc = null;
         try {
-            DBObject doc = new BasicDBObject();
+            doc = new BasicDBObject();
             int n   = rand.nextInt( usernames.length );
             doc.put( "username",   usernames[n] );
             doc.put( "continent",  continents[n] );
@@ -60,7 +66,8 @@ public class mongoAccounting {
             coll.insert(doc);
         } catch (MongoException e) {
             e.printStackTrace();
-        }        
+        }   
+        return doc;     
     }
 
     private static int getRandomBytes() {
