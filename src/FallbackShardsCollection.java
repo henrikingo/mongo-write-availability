@@ -57,7 +57,7 @@ public class FallbackShardsCollection {
                // if not, then we silently retry on the next fallback shard
                doc.put( "_fallback", i+1 );
                // and if there are no more shards to try, we give up and throw the exception to caller
-               if ( i+1 >= _fallbackShards ) {
+               if ( i+1 > _fallbackShards ) {
                    throw e;
                }
            }

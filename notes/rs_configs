@@ -248,3 +248,43 @@ switched to db writeav
 s3:PRIMARY> db.justatest.find()
 { "_id" : 1, "username" : "hingo", "firstname" : "Henrik", "lastname" : "Ingo", "oddeven" : 1, "country" : "Finland", "continent" : "Europe" }
 s3:PRIMARY> 
+
+
+
+
+
+
+
+
+
+
+************************************************
+New day, implemented src/FallbackShardsCollection.java
+This is the corresponding configuration for tag ranges:
+
+sh.addShardTag( "s1", "s1" )
+sh.addShardTag( "s2", "s2" )
+sh.addShardTag( "s3", "s3" )
+sh.addShardTag( "s4", "s4" )
+
+sh.addTagRange( "avtest.acctFallback", { continent : "America", _shardAffinity : 0, _fallback : 0 }, {continent : "America", _shardAffinity : 0, _fallback : 1 }, "s1" )
+sh.addTagRange( "avtest.acctFallback", { continent : "America", _shardAffinity : 0, _fallback : 1 }, {continent : "America", _shardAffinity : 0, _fallback : 2 }, "s2" )
+
+sh.addTagRange( "avtest.acctFallback", { continent : "America", _shardAffinity : 1, _fallback : 0 }, {continent : "America", _shardAffinity : 1, _fallback : 1 }, "s2" )
+sh.addTagRange( "avtest.acctFallback", { continent : "America", _shardAffinity : 1, _fallback : 1 }, {continent : "America", _shardAffinity : 1, _fallback : 2 }, "s1" )
+
+sh.addTagRange( "avtest.acctFallback", { continent : "Europe", _shardAffinity : 0, _fallback : 0 }, {continent : "Europe", _shardAffinity : 0, _fallback : 1 }, "s3" )
+sh.addTagRange( "avtest.acctFallback", { continent : "Europe", _shardAffinity : 0, _fallback : 1 }, {continent : "Europe", _shardAffinity : 0, _fallback : 2 }, "s4" )
+
+sh.addTagRange( "avtest.acctFallback", { continent : "Europe", _shardAffinity : 1, _fallback : 0 }, {continent : "Europe", _shardAffinity : 1, _fallback : 1 }, "s4" )
+sh.addTagRange( "avtest.acctFallback", { continent : "Europe", _shardAffinity : 1, _fallback : 1 }, {continent : "Europe", _shardAffinity : 1, _fallback : 2 }, "s3" )
+
+
+
+
+
+
+
+
+
+
