@@ -3,7 +3,12 @@ import java.net.UnknownHostException;
 
 import java.util.Random;
 
-
+/**
+ * Simulate simple accounting of tickets, in the spirit of a RADIUS or telephone billing system.
+ *
+ * Purpose is to demonstrate the use of FallbackShardsCollection to increase
+ * write availability.
+ */
 public class mongoAccounting {
     // Settings, yes you can edit these before compiling
     private static String   hostname       = "mongos.eu.public";
